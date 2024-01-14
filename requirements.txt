@@ -1,4 +1,2 @@
 git+https://github.com/Pycord-Development/pycord
 python-dotenv
-quick_sqlite
-sqlite3

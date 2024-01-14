@@ -1,6 +1,6 @@
 import os
 from discord import Bot, Interaction, ApplicationContext as AppCtx
-from .database import Database
+from .database import BotDatabase
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 
@@ -15,7 +15,7 @@ class Bot(Bot):
 
     @property
     def database(self):
-        return Database(self.database_path)
+        return BotDatabase(self.database_path)
     
     def get_interaction_value(self, interaction: Interaction):
         return [data.get("components",{})[0].get("value") for data in interaction.data.get("components",{})]

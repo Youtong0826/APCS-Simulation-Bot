@@ -5,7 +5,7 @@ from typing import Any
 
 load_dotenv()
 
-class Database(Database):
+class BotDatabase(Database):
     def __init__(self, path: str, db_name: str = "__default__", auto_init: Any = None) -> None:
         super().__init__(path, db_name, auto_init)
 
