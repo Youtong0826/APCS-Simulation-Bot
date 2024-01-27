@@ -32,3 +32,7 @@ class BotDatabase(Database):
         self.set(key, data)
         if id in data:
             return self.remove(key, id)
+        
+if __name__ == "__main__":
+    db = BotDatabase('bot.db')
+    print(db.get("notice_channel"))
