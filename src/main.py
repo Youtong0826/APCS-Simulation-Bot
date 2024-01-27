@@ -62,37 +62,37 @@ async def setting(ctx: Interaction):
 #     await msg.edit(embed=embed)
 #     await ctx.response.send_message('編輯成功~', ephemeral=True)
 
-@bot.slash_command()
-async def test(ctx: Interaction):
-    sents = bot.database.get('sents', 1)
-    times1 = datetime(2024, 1, 27, 20, 0, 0)
-    times2 = datetime(2024, 1, 27, 19, 45, 0)
-    times = times1-times2
-    print(bot.database.get('url'))
-    if (times.days <= 0 and ((times.seconds <= 3600 and sents == 1) or (times.seconds <= 900 and sents == 2))):
+# @bot.slash_command()
+# async def test(ctx: Interaction):
+#     sents = bot.database.get('sents', 1)
+#     times1 = datetime(2024, 1, 27, 20, 0, 0)
+#     times2 = datetime(2024, 1, 27, 19, 45, 0)
+#     times = times1-times2
+#     print(bot.database.get('url'))
+#     if (times.days <= 0 and ((times.seconds <= 3600 and sents == 1) or (times.seconds <= 900 and sents == 2))):
         
-        notice_channel= bot.get_channel(1195611360327901214)
-        embed = Embed(
-            title="APCS 模擬測驗",
-            url=bot.database.get('url'),
-            description=f'`將在1小時內開始`' if times.seconds > 900 else '`將在15分鐘內開始`',
-            color=Colour.yellow()
-        )
+#         notice_channel= bot.get_channel(1195611360327901214)
+#         embed = Embed(
+#             title="APCS 模擬測驗",
+#             url=bot.database.get('url'),
+#             description=f'`將在1小時內開始`' if times.seconds > 900 else '`將在15分鐘內開始`',
+#             color=Colour.yellow()
+#         )
         
-        embed.add_field(
-            name='開始時間',
-            value=f'`{bot.database.get("start_time")}`'
-        )
+#         embed.add_field(
+#             name='開始時間',
+#             value=f'`{bot.database.get("start_time")}`'
+#         )
         
-        embed.add_field(
-            name="競賽時長",
-            value='`0 天 2 小時 30 分鐘`'
-        )
+#         embed.add_field(
+#             name="競賽時長",
+#             value='`0 天 2 小時 30 分鐘`'
+#         )
         
-        role = notice_channel.guild.get_role(1196287433482965025)
+#         role = notice_channel.guild.get_role(1196287433482965025)
         
-        await notice_channel.send(role.mention, embed=embed)
-        bot.database.add('sents', 1)
+#         await notice_channel.send(role.mention, embed=embed)
+#         bot.database.add('sents', 1)
 
 @bot.event
 async def on_ready():
