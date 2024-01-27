@@ -18,15 +18,17 @@ from discord.ui import (
     InputText
 )
 
+from datetime import datetime
+
 bot = Bot(intents=Intents.all())#
 
-@bot.slash_command(checks=[bot.is_administrator])
+@bot.slash_command()
 async def setting(ctx: Interaction):
     embed = Embed(title="設定", color=Colour.nitro_pink())
 
     embed.add_field(
         name="開始時間",
-        value=f"`{bot.database.get('time', '無資料')}`",
+        value=f"`{bot.database.get('satrt_time', '無資料')}`",
     )
 
     embed.add_field(
@@ -46,6 +48,52 @@ async def setting(ctx: Interaction):
     bot.database.set('msg', msg.id)
     bot.database.set('control', msg.channel_id)
 
+# @bot.slash_command()
+# async def add_field(ctx: Interaction, name: str, value: str):#https://apcs-simulation.com/contest/2
+#     setting_channel = bot.get_channel(bot.database.get('control'))
+#     msg = await setting_channel.fetch_message(bot.database.get('msg'))
+    
+#     embed = msg.embeds[0]
+#     embed.add_field(
+#         name=name,
+#         value=value
+#     )
+    
+#     await msg.edit(embed=embed)
+#     await ctx.response.send_message('編輯成功~', ephemeral=True)
+
+@bot.slash_command()
+async def test(ctx: Interaction):
+    sents = bot.database.get('sents', 1)
+    times1 = datetime(2024, 1, 27, 20, 0, 0)
+    times2 = datetime(2024, 1, 27, 19, 45, 0)
+    times = times1-times2
+    print(bot.database.get('url'))
+    if (times.days <= 0 and ((times.seconds <= 3600 and sents == 1) or (times.seconds <= 900 and sents == 2))):
+        
+        notice_channel= bot.get_channel(1195611360327901214)
+        embed = Embed(
+            title="APCS 模擬測驗",
+            url=bot.database.get('url'),
+            description=f'`將在1小時內開始`' if times.seconds > 900 else '`將在15分鐘內開始`',
+            color=Colour.yellow()
+        )
+        
+        embed.add_field(
+            name='開始時間',
+            value=f'`{bot.database.get("start_time")}`'
+        )
+        
+        embed.add_field(
+            name="競賽時長",
+            value='`0 天 2 小時 30 分鐘`'
+        )
+        
+        role = notice_channel.guild.get_role(1196287433482965025)
+        
+        await notice_channel.send(role.mention, embed=embed)
+        bot.database.add('sents', 1)
+
 @bot.event
 async def on_ready():
     bot.log("I'm ready!")
@@ -58,7 +106,9 @@ async def on_member_join(member: Member):
 @bot.event
 async def on_interaction(interaction: Interaction):
     if interaction.is_command():
-        return await setting(interaction)
+        print(interaction.data)
+        return await bot.get_command(interaction.data['name'])(interaction)
+        #return await setting(interaction)
     
     custom_id = interaction.custom_id
     if custom_id == "set_time":
@@ -86,7 +136,7 @@ async def on_interaction(interaction: Interaction):
     elif custom_id == "set_time_modal":
         data: list[str] = bot.get_interaction_value(interaction)
         try:
-            bot.database.set("time", data[0])
+            bot.database.set("satrt_time", data[0])
             return await interaction.response.send_message(f"設定成功! 資料:`{data[0]}`", ephemeral=True)
 
         except Exception as ex:
@@ -97,6 +147,7 @@ async def on_interaction(interaction: Interaction):
         channel: TextChannel = bot.get_channel(int(bot.get_select_value(interaction, 0)))
         try:
             bot.database.set("notice_channel", channel.id)
+            bot.database.set('sents', 1)
             return await interaction.response.send_message(f"設定成功! 頻道:`{channel.name}` (id: `{channel.id}`)", ephemeral=True)
         except Exception as ex:
             bot.log(ex)
