@@ -4,13 +4,18 @@ from lib.bot import Bot
 from discord import (
     Embed,
     Colour,
+    Message,
     Interaction,
+    ButtonStyle,
+    ComponentType,
     slash_command
 )
 
 from discord.ui import (
     View,
-    Button
+    Button,
+    Select,
+    role_select,
 )
 
 class CommandControl(CogExtension):
@@ -76,10 +81,57 @@ class CommandControl(CogExtension):
         )
 
         role = notice_channel.guild.get_role(1196288338576035880)
-        print(role)
 
         await notice_channel.send(role.mention, embed=embed)
         self.bot.database.add('sents', 1)
+        
+    @slash_command()
+    async def add_button(self, ctx: Interaction, style: int = None, label: str = None, custom_id: str = None):
+        setting_channel = self.bot.get_channel(self.bot.database.get('control'))
+        msg: Message = await setting_channel.fetch_message(self.bot.database.get('msg'))
+        view = View()
+        for n in msg.components:
+            self.bot.from_component(view, n)
+        
+        view.add_item(Button(
+            style=ButtonStyle.success,
+            label=label,
+            custom_id=custom_id,
+            row=1,
+        ))
+        
+        await msg.edit(view=view)
+        await ctx.response.send_message('編輯成功~', ephemeral=True)
+        
+    @slash_command()
+    async def add_select(self, ctx: Interaction, style: int = None, label: str = None, custom_id: str = None):
+        setting_channel = self.bot.get_channel(self.bot.database.get('control'))
+        msg: Message = await setting_channel.fetch_message(self.bot.database.get('msg'))
+        view = View()
+        for n in msg.components:
+            self.bot.from_component(view, n)
+        
+        view.add_item(Select(
+            select_type=ComponentType.role_select,
+            placeholder="設定測驗身分組",
+            custom_id="set_role",
+            row=1,
+        ))
+        
+        await msg.edit(view=view)
+        await ctx.response.send_message('編輯成功~', ephemeral=True)
+        
+    @slash_command()
+    async def edit(self, ctx: Interaction):
+        setting_channel = self.bot.get_channel(self.bot.database.get('control'))
+        msg: Message = await setting_channel.fetch_message(self.bot.database.get('msg'))
+        view = View()
+        for n in msg.components:
+            self.bot.from_component(view, n)
+            
+        view.remove_item(view.get_item('set_role'))
+        await msg.edit(view=view)
+        await ctx.response.send_message('編輯成功~', ephemeral=True)
         
 def setup(bot: Bot):
     bot.add_cog(CommandControl(bot))
