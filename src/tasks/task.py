@@ -7,6 +7,7 @@ class Task(commands.Cog):
         self.bot = bot
         self.refresh_ch.start()
         self.refresh_msg.start()
+        self.notice.start()
         self.is_sent = 0
         
     @property
@@ -21,9 +22,9 @@ class Task(commands.Cog):
     def sents(self):
         return self.bot.database.get('sents', 1)
 
-    @tasks.loop(minutes=5.0)
-    async def refresh_ch(self):
-        if (self.times.days < 0 and ((self.times.seconds <= 60 and self.sents == 1) or (self.times.seconds <= 15 and self.sents == 2))):
+    @tasks.loop(minutes=1.0)
+    async def notice(self):
+        if (self.times != "無資料" and self.times.days <= 0 and ((self.times.seconds <= 3600 and self.sents == 1) or (self.times.seconds <= 900 and self.sents == 2))):
             notice_channel= self.bot.get_channel(self.bot.database.get('notice_channel'))
             
             embed = Embed(
@@ -47,7 +48,9 @@ class Task(commands.Cog):
             
             await notice_channel.send(role.mention, embed=embed)
             self.bot.database.add('sents', 1)
-            
+    
+    @tasks.loop(minutes=5.0)
+    async def refresh_ch(self):
         show_channel = self.bot.get_channel(self.bot.database.get('time_left_channel'))
         await show_channel.edit(name=self.times_str)
         
@@ -60,7 +63,7 @@ class Task(commands.Cog):
         msg = await setting_channel.fetch_message(self.bot.database.get('msg'))
         
         embed = msg.embeds[0]
-        embed.fields[0].value = f"`{self.bot.database.get('satrt_time', '無資料')}`"
+        embed.fields[0].value = f"`{self.bot.database.get('start_time', '無資料')}`"
         embed.fields[1].value = f"`{self.bot.get_channel(self.bot.database.get('notice_channel'))}`"
         embed.fields[2].value = f"`{self.times_str}`"
         
