@@ -34,10 +34,13 @@ class Bot(Bot):
         time: datetime = datetime.strptime(self.database.get('start_time'), '%Y/%m/%d %H:%M:%S')
         now: datetime = self.get_now_time()
         time_left = time-now
-        return time_left 
+        return time_left if now < time else "無資料"
     
     def get_time_left_str(self):
         time_left = self.get_time_left()
+        
+        if time_left == "無資料":
+            return time_left
         
         times = str(time_left).split()
         if time_left.days > 0:
@@ -52,6 +55,25 @@ class Bot(Bot):
     
     def slash_command(self, **kwargs):
         return super().slash_command(**kwargs, checks=[self.is_administrator])
+
+    def load_extension(self, folder: str, mode: str = "load", is_notice: bool = True) -> None:
+
+        loading_method = {
+            "load":super().load_extension,
+            "reload":super().reload_extension,
+            "unload":super().unload_extension
+        }
+
+        if is_notice:
+            print(f"Start {mode}ing {folder}")
+
+        for Filename in os.listdir(f'src/{folder}'):
+            if Filename.endswith(".py"):
+                loading_method[mode](f"{folder}.{Filename[:-3]}")
+                if is_notice:
+                    print(f'-- {mode}ed "{Filename}"')
+
+        print(f"{mode}ing {folder} end")
     
     def log(self, *text: str):
         print(self.get_now_time().strftime('[%Y/%m/%d %H:%M:%S]'), *text)
