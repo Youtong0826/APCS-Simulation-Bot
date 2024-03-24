@@ -7,7 +7,7 @@ from discord import (
 )
 
 class EventMembers(CogExtension):
-    @Cog.listener
+    @Cog.listener()
     async def on_member_join(self, member: Member):
         self.bot.log("new member join:", member.name, "id:", member.id)
         
