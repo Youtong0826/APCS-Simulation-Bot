@@ -7,7 +7,7 @@ bot = Bot(intents=Intents.all())#
 @bot.event
 async def on_ready():
     bot.log("I'm ready!")
-    bot.log("database: \n", bot.database)
+    bot.log("database:", bot.database)
 
 if __name__ == "__main__":
     bot.load_extension("commands")
