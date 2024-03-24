@@ -29,10 +29,13 @@ class EventInteraction(CogExtension):
         if custom_id == "set_time":
             return await interaction.response.send_modal(
                 Modal(
-                    InputText(label="日期與時間", placeholder="年/月/日 時:分:秒"), 
+                    InputText(
+                        label="日期與時間", 
+                        placeholder="年/月/日 時:分:秒",
+                        value=self.bot.database.get('start_time')
+                    ), 
                     title="設定開始日期與時間", 
                     custom_id="set_time_modal",
-                    value=self.bot.database.get('start_time')
                 )
             )
             
