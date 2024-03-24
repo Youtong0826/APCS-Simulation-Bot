@@ -26,7 +26,8 @@ class Task(commands.Cog):
     @tasks.loop(minutes=1.0)
     async def notice(self):
         if (self.times != "無資料" and self.times.days <= 0 and ((self.times.seconds <= 3600 and self.sents == 1) or (self.times.seconds <= 900 and self.sents == 2))):
-            notice_channel= self.bot.get_channel(self.bot.database.get('notice_channel'))
+            # notice_channel = self.bot.get_channel(self.bot.database.get('notice_channel'))
+            notice_channel = self.bot.get_channel(1210848585927757946)
             
             embed = Embed(
                 title="APCS 模擬測驗",
@@ -45,9 +46,10 @@ class Task(commands.Cog):
                 value='`0 天 2 小時 30 分鐘`'
             )
             
-            role = notice_channel.guild.get_role(self.bot.database.get("role"))
+            #role = notice_channel.guild.get_role(self.bot.database.get("role"))
             
-            await notice_channel.send(role.mention, embed=embed)
+            #await notice_channel.send(role.mention, embed=embed)
+            await notice_channel.send(embed=embed)
             self.bot.database.add('sents', 1)
     
     @tasks.loop(minutes=5.0)
@@ -70,7 +72,7 @@ class Task(commands.Cog):
         embed.fields[3].name = "測驗連結"
         embed.fields[3].value = f"`{self.bot.database.get('url')}`"
         embed.fields[4].name = "身分組"
-        embed.fields[4].name = f"`{find(lambda x: x.id == self.bot.database.get('role'), msg.guild.roles)}`"
+        embed.fields[4].value = f"`{find(lambda x: x.id == self.bot.database.get('role'), msg.guild.roles)}`"
         
         await msg.edit(embed=embed)
         
