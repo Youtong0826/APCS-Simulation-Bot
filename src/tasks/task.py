@@ -1,5 +1,6 @@
 from discord.ext import tasks, commands
 from discord import Embed, Colour
+from discord.utils import find
 from lib.bot import Bot 
 
 class Task(commands.Cog):
@@ -44,7 +45,7 @@ class Task(commands.Cog):
                 value='`0 天 2 小時 30 分鐘`'
             )
             
-            role = notice_channel.guild.get_role(1199703262320939028)
+            role = notice_channel.guild.get_role(self.bot.database.get("role"))
             
             await notice_channel.send(role.mention, embed=embed)
             self.bot.database.add('sents', 1)
@@ -66,6 +67,10 @@ class Task(commands.Cog):
         embed.fields[0].value = f"`{self.bot.database.get('start_time', '無資料')}`"
         embed.fields[1].value = f"`{self.bot.get_channel(self.bot.database.get('notice_channel'))}`"
         embed.fields[2].value = f"`{self.times_str}`"
+        embed.fields[3].name = "測驗連結"
+        embed.fields[3].value = f"`{self.bot.database.get('url')}`"
+        embed.fields[4].name = "身分組"
+        embed.fields[4].name = f"`{find(lambda x: x.id == self.bot.database.get('role'), msg.guild.roles)}`"
         
         await msg.edit(embed=embed)
         
