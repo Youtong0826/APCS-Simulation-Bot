@@ -11,7 +11,10 @@ class BotDatabase(Database):
 
     def __str__(self) -> str:
         all = super().get_all()
-        return str({item.key: item.value for item in all})
+        
+        output = [f"    {item.key}: {item.value}" for item in all]
+        
+        return '{\n' + '\n'.join(output) + '\n}'
 
     def get(self, key, default=None) -> Any:
         return default if not super().get(key) else super().get(key)
@@ -35,4 +38,4 @@ class BotDatabase(Database):
         
 if __name__ == "__main__":
     db = BotDatabase('bot.db')
-    print(db.get("notice_channel"))
+    print(db)
