@@ -15,7 +15,6 @@ from discord.ui import (
     View,
     Button,
     Select,
-    role_select,
 )
 
 class CommandControl(CogExtension):
@@ -60,13 +59,13 @@ class CommandControl(CogExtension):
         await ctx.response.send_message('編輯成功~', ephemeral=True)
 
     @slash_command()
-    async def test(self, ctx: Interaction):
-        notice_channel= self.bot.get_channel(1193484208077819974)
+    async def notice(self, ctx: Interaction, times: int):
+        notice_channel= self.bot.get_channel(self.bot.database.get('notice_channel'))
         print(notice_channel)
         embed = Embed(
             title="APCS 模擬測驗",
             url=self.bot.database.get('url'),
-            description='`將在10分鐘內開始`',
+            description=f'`將在1小時內開始`' if times == 1 else '`將在15分鐘內開始`',
             color=Colour.yellow()
         )
 
@@ -80,10 +79,10 @@ class CommandControl(CogExtension):
             value='`0 天 2 小時 30 分鐘`'
         )
 
-        role = notice_channel.guild.get_role(1196288338576035880)
+        role = notice_channel.guild.get_role(self.bot.database.get("role"))
 
         await notice_channel.send(role.mention, embed=embed)
-        self.bot.database.add('sents', 1)
+        self.bot.database.set('sents', 9)
         
     @slash_command()
     async def add_button(self, ctx: Interaction, style: int = None, label: str = None, custom_id: str = None):
@@ -132,6 +131,11 @@ class CommandControl(CogExtension):
         view.remove_item(view.get_item('set_role'))
         await msg.edit(view=view)
         await ctx.response.send_message('編輯成功~', ephemeral=True)
+        
+    @slash_command()
+    async def say(self, ctx: Interaction, *, msg: str):
+        await ctx.send(msg)
+        
         
 def setup(bot: Bot):
     bot.add_cog(CommandControl(bot))
