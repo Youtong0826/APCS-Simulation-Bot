@@ -11,7 +11,6 @@ class BotDatabase(Database):
 
     def __str__(self) -> str:
         all = super().get_all()
-        
         output = [f"    {item.key}: {item.value}" for item in all]
         
         return '{\n' + '\n'.join(output) + '\n}'
