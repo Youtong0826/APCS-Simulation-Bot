@@ -35,7 +35,7 @@ class Bot(Bot):
     def __init__(self, description=None, *args, **options):
         super().__init__(description, *args, **options)
 
-        self.database_path = "bot.db"
+        self.database_path = "src/bot.db"
         self.token = os.getenv("TOKEN")
 
     @property
