@@ -1,4 +1,4 @@
-from lib.classes import CogExtension
+from lib.cog import CogExtension
 from lib.bot import Bot
 
 from discord import (
@@ -49,10 +49,29 @@ class CommandControl(CogExtension):
             value=f"`{find(lambda x: x.id == self.bot.database.get('role'), msg.guild.roles)}`"
         )
 
-        set_time = Button(style=1, label="設定開始時間", custom_id="set_time")
-        set_channel = Button(style=3, label="設定通知頻道", custom_id="set_channel")
-
-        msg = await ctx.response.send_message(embed=embed, view=View(set_time, set_channel))
+        msg = await ctx.response.send_message(embed=embed, view=View(
+            Button(
+                style=ButtonStyle.primary,
+                label="設定開始時間",
+                custom_id="set_time"
+            ),
+            Button(
+                style=ButtonStyle.success,
+                label="設定通知頻道",
+                custom_id="set_channel"
+            ),
+            Button(
+                style=ButtonStyle.primary,
+                label="設定測驗連結",
+                custom_id="set_url"
+            ),
+            Button(
+                style=ButtonStyle.success,
+                label="設定身分組",
+                custom_id="set_role"
+            )
+        , timeout=None))
+        
         self.bot.database.set('msg', msg.id)
         self.bot.database.set('control', msg.channel_id)
 
