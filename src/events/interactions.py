@@ -1,4 +1,4 @@
-from lib.classes import CogExtension
+from lib.cog import CogExtension
 from lib.bot import Bot
 
 from discord import (
