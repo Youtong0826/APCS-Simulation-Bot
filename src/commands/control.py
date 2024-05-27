@@ -17,6 +17,8 @@ from discord.ui import (
     Select,
 )
 
+from discord.utils import find
+
 class CommandControl(CogExtension):
     @slash_command()
     async def setting(self, ctx: Interaction):
@@ -29,12 +31,22 @@ class CommandControl(CogExtension):
 
         embed.add_field(
             name="通知頻道",
-            value=f"`{self.bot.get_channel(int(self.bot.database.get('channel', '無資料')))}`",
+            value=f"`{self.bot.get_channel(self.bot.database.get('notice_channel', '無資料'))}`",
         )
 
         embed.add_field(
             name="剩餘時間",
             value=f"`{str(self.bot.get_time_left())}`"
+        )
+        
+        embed.add_field(
+            name="測驗連結",
+            value=f"`{self.bot.database.get("url")}`"
+        )
+        
+        embed.add_field(
+            name="身分組",
+            value=f"`{find(lambda x: x.id == self.bot.database.get('role'), msg.guild.roles)}`"
         )
 
         set_time = Button(style=1, label="設定開始時間", custom_id="set_time")
@@ -135,7 +147,6 @@ class CommandControl(CogExtension):
     @slash_command()
     async def say(self, ctx: Interaction, *, msg: str):
         await ctx.send(msg)
-        
         
 def setup(bot: Bot):
     bot.add_cog(CommandControl(bot))
