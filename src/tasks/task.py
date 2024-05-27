@@ -2,7 +2,10 @@ from discord.ext import tasks, commands
 from discord import Embed, Colour
 from discord.utils import find
 from lib.bot import Bot 
-
+from lib.timing import (
+    get_time_left,
+    get_time_left_str,
+)
 class Task(commands.Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
@@ -13,11 +16,11 @@ class Task(commands.Cog):
         
     @property
     def times(self):
-        return self.bot.get_time_left()
+        return get_time_left()
     
     @property
     def times_str(self):
-        return self.bot.get_time_left_str()
+        return get_time_left_str()
     
     @property
     def sents(self):
