@@ -2,12 +2,13 @@ from lib.cog import CogExtension
 from lib.bot import Bot
 
 from discord import (
-    Embed,
+    ButtonStyle,
     Colour,
+    ComponentType,
+    Embed,
+    EmbedField,
     Message,
     Interaction,
-    ButtonStyle,
-    ComponentType,
     slash_command
 )
 
@@ -22,54 +23,51 @@ from discord.utils import find
 class CommandControl(CogExtension):
     @slash_command()
     async def setting(self, ctx: Interaction):
-        embed = Embed(title="設定", color=Colour.nitro_pink())
 
-        embed.add_field(
-            name="開始時間",
-            value=f"`{self.bot.database.get('satrt_time', '無資料')}`",
-        )
-
-        embed.add_field(
-            name="通知頻道",
-            value=f"`{self.bot.get_channel(self.bot.database.get('notice_channel', '無資料'))}`",
-        )
-
-        embed.add_field(
-            name="剩餘時間",
-            value=f"`{str(self.bot.get_time_left())}`"
-        )
-        
-        embed.add_field(
-            name="測驗連結",
-            value=f"`{self.bot.database.get("url")}`"
-        )
-        
-        embed.add_field(
-            name="身分組",
-            value=f"`{find(lambda x: x.id == self.bot.database.get('role'), msg.guild.roles)}`"
-        )
-
-        msg = await ctx.response.send_message(embed=embed, view=View(
-            Button(
-                style=ButtonStyle.primary,
-                label="設定開始時間",
-                custom_id="set_time"
-            ),
-            Button(
-                style=ButtonStyle.success,
-                label="設定通知頻道",
-                custom_id="set_channel"
-            ),
-            Button(
-                style=ButtonStyle.primary,
-                label="設定測驗連結",
-                custom_id="set_url"
-            ),
-            Button(
-                style=ButtonStyle.success,
-                label="設定身分組",
-                custom_id="set_role"
-            )
+        msg = await ctx.response.send_message(
+            embed=Embed(title="設定", color=Colour.nitro_pink(), fields=[
+                EmbedField(
+                    "開始時間",
+                    f"`{self.bot.database.get('satrt_time', '無資料')}`"
+                ),
+                EmbedField(
+                    "通知頻道",
+                    f"`{self.bot.get_channel(self.bot.database.get('notice_channel', '無資料'))}`"
+                ),
+                EmbedField(
+                    "剩餘時間",
+                    f"`{str(self.bot.get_time_left())}`"
+                ),
+                EmbedField(
+                    "測驗連結",
+                    f"`{self.bot.database.get("url")}`"
+                ),
+                EmbedField(
+                    "身分組",
+                    f"`{find(lambda x: x.id == self.bot.database.get('role'), msg.guild.roles)}`"
+                )
+            ]), 
+            view=View(
+                Button(
+                    style=ButtonStyle.primary,
+                    label="設定開始時間",
+                    custom_id="set_time"
+                ),
+                Button(
+                    style=ButtonStyle.success,
+                    label="設定通知頻道",
+                    custom_id="set_channel"
+                ),
+                Button(
+                    style=ButtonStyle.primary,
+                    label="設定測驗連結",
+                    custom_id="set_url"
+                ),
+                Button(
+                    style=ButtonStyle.success,
+                    label="設定身分組",
+                    custom_id="set_role"
+                )
         , timeout=None))
         
         self.bot.database.set('msg', msg.id)
