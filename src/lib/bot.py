@@ -4,12 +4,6 @@ from typing import (
     Union,
 )
 
-from datetime import (
-    datetime, 
-    timedelta, 
-    timezone
-)
-
 from discord import (
     Bot, 
     ActionRow,
@@ -26,7 +20,8 @@ from discord.ui import (
     Select
 )
 
-from .database import BotDatabase
+from database import Database
+from lib.timing import get_now_time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -40,7 +35,7 @@ class Bot(Bot):
 
     @property
     def database(self):
-        return BotDatabase(self.database_path)
+        return Database(self.database_path)
     
     def get_interaction_value(self, interaction: Interaction):
         return [data.get("components",{})[0].get("value") for data in interaction.data.get("components",{})]
@@ -78,33 +73,6 @@ class Bot(Bot):
     def is_manager(self, ctx: AppCtx):
         return ctx.author.id == 856041155341975582
     
-    def get_now_time(self, time: datetime = None, hours = 8) -> datetime:
-        ori = datetime.now(timezone(timedelta(hours=hours))) if not time else time
-        return datetime(ori.year, ori.month, ori.day, ori.hour, ori.minute, ori.second)
-
-    def get_time_left(self):
-        time: datetime = datetime.strptime(self.database.get('start_time'), '%Y/%m/%d %H:%M:%S')
-        now: datetime = self.get_now_time()
-        time_left = time-now
-        return time_left if now < time else "無資料"
-    
-    def get_time_left_str(self):
-        time_left = self.get_time_left()
-        
-        if time_left == "無資料":
-            return time_left
-        
-        times = str(time_left).split()
-        if time_left.days > 0:
-            mi = times[2].split(':')
-            times = f"{times[0]} 天 {mi[0]} 小時 {mi[1]} 分鐘"
-
-        else:
-            mi = times[0].split(':')
-            times = f"0 天 {mi[0]} 小時 {mi[1]} 分鐘"
-            
-        return times
-    
     def slash_command(self, **kwargs):
         return super().slash_command(**kwargs, checks=[self.is_manager])
 
@@ -128,4 +96,4 @@ class Bot(Bot):
         print(f"{mode}ing {folder} end")
     
     def log(self, *text: str, sep: str = None):
-        print(self.get_now_time().strftime('[%Y/%m/%d %H:%M:%S]'), *text, sep=sep)
+        print(get_now_time().strftime('[%Y/%m/%d %H:%M:%S]'), *text, sep=sep)
