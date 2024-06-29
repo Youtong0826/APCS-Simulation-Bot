@@ -55,7 +55,7 @@ class Task(commands.Cog):
     
     @tasks.loop(minutes=5.0)
     async def refresh_ch(self):
-        show_channel = self.bot.get_channel(self.bot.database.get('time_left_channel'))
+        show_channel = self.bot.fetch_channel(self.bot.database.get('time_left_channel'))
         await show_channel.edit(name=self.times_str)
         
         self.bot.log(f"updated the channel name ({self.times_str})")

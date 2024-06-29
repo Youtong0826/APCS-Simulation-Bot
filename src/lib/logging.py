@@ -18,6 +18,7 @@ class Logging:
         match mode:
             case LoggingMode.INFO:
                 pass
+            
             case LoggingMode.DEBUG:
                 pass
             
@@ -30,6 +31,5 @@ class Logging:
         if (wf):
             with open("bot.log", "w+", encoding="utf-8") as f:
                 f.writelines(output)
-                f.close()
         
         print(prefix, *text, sep=sep)
