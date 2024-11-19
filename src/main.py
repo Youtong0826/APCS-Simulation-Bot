@@ -1,6 +1,11 @@
+import logging.config
 from lib.bot import Bot
 from discord import Intents
 
+import logging
+
+logger = logging.getLogger("bot")
+logger.setLevel(logging.INFO)
 
 bot = Bot(intents=Intents.all())#
 
