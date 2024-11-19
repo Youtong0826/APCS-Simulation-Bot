@@ -28,7 +28,7 @@ class CommandControl(CogExtension):
             embed=Embed(title="設定", color=Colour.nitro_pink(), fields=[
                 EmbedField(
                     "開始時間",
-                    f"`{self.bot.database.get('satrt_time', '無資料')}`"
+                    f"`{self.bot.database.get('start_time', '無資料')}`"
                 ),
                 EmbedField(
                     "通知頻道",
@@ -36,15 +36,15 @@ class CommandControl(CogExtension):
                 ),
                 EmbedField(
                     "剩餘時間",
-                    f"`{str(self.bot.get_time_left())}`"
+                    f"`{str(self.bot.get_time_left_str())}`"
                 ),
                 EmbedField(
                     "測驗連結",
-                    f"`{self.bot.database.get("url")}`"
+                    f"`{self.bot.database.get('url')}`"
                 ),
                 EmbedField(
                     "身分組",
-                    f"`{find(lambda x: x.id == self.bot.database.get('role'), msg.guild.roles)}`"
+                    f"`{find(lambda x: x.id == self.bot.database.get('role'), ctx.guild.roles)}`"
                 )
             ]), 
             view=View(
@@ -70,8 +70,11 @@ class CommandControl(CogExtension):
                 )
         , timeout=None))
         
-        self.bot.database.set('msg', msg.id)
         self.bot.database.set('control', msg.channel_id)
+        
+    @slash_command()
+    async def set_msg_id(self, ctx: Interaction, key: str, value):
+        self.bot.database.set(key, value)
 
     @slash_command()
     async def add_field(self, ctx: Interaction, name: str, value: str):#https://apcs-simulation.com/contest/2
