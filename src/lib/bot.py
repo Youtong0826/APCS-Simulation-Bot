@@ -71,12 +71,17 @@ class Bot(Bot):
             case _:
                 for c in component.children:
                     self.from_component(view, c)
-                    
-    def is_administrator(self, ctx: AppCtx):
+
+    @staticmethod                
+    def is_administrator(ctx: AppCtx):
         return ctx.author.guild_permissions.administrator or ctx.author.get_role(1193356058694004878) or ctx.author.get_role(1193356245193723965)
     
-    def is_manager(self, ctx: AppCtx):
-        return ctx.author.id == 856041155341975582
+    @staticmethod
+    def is_manager(ctx: AppCtx):
+        return ctx.author.id == 856041155341975582         \
+    		or ctx.author.get_role(1193356058694004878)    \
+        	or ctx.author.get_role(1193356245193723965)    \
+            or ctx.author.get_role(1193361341411496007)    \
     
     def get_now_time(self, time: datetime = None, hours = 8) -> datetime:
         ori = datetime.now(timezone(timedelta(hours=hours))) if not time else time
