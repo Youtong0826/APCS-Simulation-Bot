@@ -1,3 +1,4 @@
+import logging
 from lib.cog import CogExtension
 from lib.bot import Bot
 
@@ -20,15 +21,16 @@ from discord.ui import (
 
 from discord.utils import find
 
-class CommandControl(CogExtension):
-    @slash_command()
-    async def setting(self, ctx: Interaction):
+logger = logging.getLogger("bot")
 
+class CommandControl(CogExtension):
+    @slash_command(checks=[Bot.is_manager])
+    async def setting(self, ctx: Interaction):
         msg = await ctx.response.send_message(
             embed=Embed(title="設定", color=Colour.nitro_pink(), fields=[
                 EmbedField(
                     "開始時間",
-                    f"`{self.bot.database.get('satrt_time', '無資料')}`"
+                    f"`{self.bot.database.get('start_time', '無資料')}`"
                 ),
                 EmbedField(
                     "通知頻道",
@@ -36,15 +38,15 @@ class CommandControl(CogExtension):
                 ),
                 EmbedField(
                     "剩餘時間",
-                    f"`{str(self.bot.get_time_left())}`"
+                    f"`{str(self.bot.get_time_left_str())}`"
                 ),
                 EmbedField(
                     "測驗連結",
-                    f"`{self.bot.database.get("url")}`"
+                    f"`{self.bot.database.get('url')}`"
                 ),
                 EmbedField(
                     "身分組",
-                    f"`{find(lambda x: x.id == self.bot.database.get('role'), msg.guild.roles)}`"
+                    f"`{find(lambda x: x.id == self.bot.database.get('role'), ctx.guild.roles)}`"
                 )
             ]), 
             view=View(
@@ -70,10 +72,14 @@ class CommandControl(CogExtension):
                 )
         , timeout=None))
         
-        self.bot.database.set('msg', msg.id)
         self.bot.database.set('control', msg.channel_id)
+        # self.bot.database.set('msg', msg.id)
 
-    @slash_command()
+    @slash_command(checks=[Bot.is_manager])
+    async def set_msg_id(self, ctx: Interaction, key: str, value):
+        self.bot.database.set(key, value)
+
+    @slash_command(checks=[Bot.is_manager])
     async def add_field(self, ctx: Interaction, name: str, value: str):#https://apcs-simulation.com/contest/2
         setting_channel = self.bot.get_channel(self.bot.database.get('control'))
         msg = await setting_channel.fetch_message(self.bot.database.get('msg'))
@@ -87,7 +93,7 @@ class CommandControl(CogExtension):
         await msg.edit(embed=embed)
         await ctx.response.send_message('編輯成功~', ephemeral=True)
 
-    @slash_command()
+    @slash_command(checks=[Bot.is_manager])
     async def notice(self, ctx: Interaction, times: int):
         notice_channel= self.bot.get_channel(self.bot.database.get('notice_channel'))
         print(notice_channel)
@@ -113,7 +119,7 @@ class CommandControl(CogExtension):
         await notice_channel.send(role.mention, embed=embed)
         self.bot.database.set('sents', 9)
         
-    @slash_command()
+    @slash_command(checks=[Bot.is_manager])
     async def add_button(self, ctx: Interaction, style: int = None, label: str = None, custom_id: str = None):
         setting_channel = self.bot.get_channel(self.bot.database.get('control'))
         msg: Message = await setting_channel.fetch_message(self.bot.database.get('msg'))
@@ -131,7 +137,7 @@ class CommandControl(CogExtension):
         await msg.edit(view=view)
         await ctx.response.send_message('編輯成功~', ephemeral=True)
         
-    @slash_command()
+    @slash_command(checks=[Bot.is_manager])
     async def add_select(self, ctx: Interaction, style: int = None, label: str = None, custom_id: str = None):
         setting_channel = self.bot.get_channel(self.bot.database.get('control'))
         msg: Message = await setting_channel.fetch_message(self.bot.database.get('msg'))
@@ -149,7 +155,7 @@ class CommandControl(CogExtension):
         await msg.edit(view=view)
         await ctx.response.send_message('編輯成功~', ephemeral=True)
         
-    @slash_command()
+    @slash_command(checks=[Bot.is_manager])
     async def edit(self, ctx: Interaction):
         setting_channel = self.bot.get_channel(self.bot.database.get('control'))
         msg: Message = await setting_channel.fetch_message(self.bot.database.get('msg'))
@@ -161,7 +167,7 @@ class CommandControl(CogExtension):
         await msg.edit(view=view)
         await ctx.response.send_message('編輯成功~', ephemeral=True)
         
-    @slash_command()
+    @slash_command(checks=[Bot.is_manager])
     async def say(self, ctx: Interaction, *, msg: str):
         await ctx.send(msg)
         
