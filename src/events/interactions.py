@@ -67,8 +67,8 @@ class EventInteraction(CogExtension):
             channel: TextChannel = self.bot.get_channel(int(self.bot.get_select_value(interaction, 0)))
             try:
                 self.bot.database.set("notice_channel", channel.id)
-
                 return await interaction.response.send_message(f"設定成功! 頻道: `{channel.name}` (id: `{channel.id}`)", ephemeral=True)
+            
             except Exception as ex:
                 self.bot.log(ex)
                 return await interaction.response.send_message(f"設定失敗! 詳情:\n```{ex}```", ephemeral=True)
